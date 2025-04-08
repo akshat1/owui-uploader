@@ -47,6 +47,7 @@ const syncDirectory = async (args) => {
 const main = () => {
   const owuiURL = process.env.OPEN_WEBUI_URL;
   const owuiApiKey = process.env.OPEN_WEBUI_API_KEY;
+  /** @type {Config} */
   const config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
   const { directories } = config;
   // watch directories
