@@ -1,0 +1,20 @@
+{
+  "name": "owui-uploader-2",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Monitor a directory tree and upload contents into open-webui.",
+  "main": "app/index.js",
+  "author": "Akshat Sharma <1529776+akshat1@users.noreply.github.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "test": "node --test app/api.test.js",
+    "coverage": "c8 --reporter=html node --test app/api.test.js"
+  },
+  "dependencies": {
+    "mime": "^4.0.7"
+  },
+  "devDependencies": {
+    "c8": "^10.1.3"
+  }
+}

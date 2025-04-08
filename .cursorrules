@@ -1,0 +1,25 @@
+# Project-specific instructions for Cursor AI
+
+## Testing
+- Using Node's built-in test runner (node --test)
+- Coverage reporting with c8
+- Run tests with: yarn test
+- Run coverage with: yarn coverage
+
+## Code Style
+- Using untranspiled JavaScript (ES modules)
+- No Babel or TypeScript
+- Follow Node.js native module patterns
+
+## Project Structure
+- Main application code in app/ directory
+- Tests co-located with source files (e.g., api.js and api.test.js)
+
+## Dependencies
+- Using yarn as package manager
+- Minimal dependencies approach
+
+## Development Workflow
+- Write tests first (TDD approach)
+- Use Node's native test assertions
+- Mock dependencies using setMockDeps pattern 
