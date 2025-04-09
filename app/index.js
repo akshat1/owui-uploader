@@ -1,5 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
+const fs = require("node:fs");
+const path = require("node:path");
 
 /**
  * @typedef {Object} WatchedDirectory
@@ -19,20 +19,20 @@ import path from "node:path";
  * @param {string} args.knowledgeId - The ID of the knowledge to add the file to
  * @returns {Function} - A function that gets called when a file is added to the directory
  */
-const getWatcherFn = (args) =>
-  async (event, filename) => {
-    const { owuiURL, owuiApiKey, knowledgeId } = args;
+const getWatcherFn = () =>
+  async(event, filename) => {
+    // const { owuiURL, owuiApiKey, knowledgeId } = args;
     console.log(`${event}: ${filename}`);
     // const filePath = path.join(directoryPath, filename);
     // const fileId = await uploadFile({ filePath, openWebUIUrl: owuiPath, openWebUIKey: owuiApiKey });
-    // await addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl: owuiPath, openWebUIKey: owuiApiKey });
+    // await addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl: owuiPath, openWebUIKey: owuiApiKey }); 
   };
 
-const syncDirectory = async (args) => {
+const syncDirectory = async(args) => {
   const {
-    directoryPath,
-    owuiURL,
-    owuiApiKey,
+    // directoryPath,
+    // owuiURL,
+    // owuiApiKey, 
     knowledgeId,
   } = args;
   console.log(`Syncing directory ${knowledgeId}`);
@@ -41,7 +41,7 @@ const syncDirectory = async (args) => {
   // If the file has been modified, re-upload the file to Open WebUI under the same fileId that was recorded previously
   // If the file has been added, add the file to Open WebUI and record the path, last modified date, and fileId from the response
   // OpenWebUI API Doesn't let us delete files yet, so we'll ignore renames, moves, and deletions.
-  // We'll record fileId, lastModified, and path for each file in a SQLite database (using utility functions in ./db.js)
+  // We'll record fileId, lastModified, and path for each file in a SQLite database (using utility functions in ./db.js) 
 };
 
 const main = () => {
@@ -54,7 +54,7 @@ const main = () => {
   for (const directory of directories) {
     const directoryPath = directory.path.replace("$HOME", process.env.HOME);
     // Schedule a sync of the directory because things might have changed while we were not watching
-    // Start watching directory
+    // Start watching directory 
     fs.watch(
       path.resolve(directoryPath),
       getWatcherFn({
