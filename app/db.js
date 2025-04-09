@@ -8,13 +8,13 @@
  * - knowledgeId
  */
 
-import sqlite3 from "node:sqlite3";
-import path from "node:path";
+const sqlite3 = require("node:sqlite3");
+const path = require("node:path");
 
 
 let db = null;
 
-export const initializeDB = async () => {
+const initializeDB = async() => {
   if (db)
     return;
   db = new sqlite3.Database(path.join(process.env.HOME, ".owui-sync.db"));
@@ -28,14 +28,14 @@ export const initializeDB = async () => {
   `);
 };
 
-export const recordFile = async (fileId, lastModified, path, knowledgeId) => {
+const recordFile = async(fileId, lastModified, path, knowledgeId) => {
   await initializeDB();
   db.exec(`
     INSERT INTO files (fileId, lastModified, path, knowledgeId) VALUES (?, ?, ?, ?);
   `, [fileId, lastModified, path, knowledgeId]);
 };
 
-export const getFile = async (fileId) => {
+const getFile = async(fileId) => {
   await initializeDB();
   const result = await db.get(`
     SELECT * FROM files WHERE fileId = ?;
@@ -43,7 +43,7 @@ export const getFile = async (fileId) => {
   return result;
 };
 
-export const getFiles = async (knowledgeId) => {
+const getFiles = async(knowledgeId) => {
   await initializeDB();
   const result = await db.all(`
     SELECT * FROM files WHERE knowledgeId = ?;
@@ -51,9 +51,16 @@ export const getFiles = async (knowledgeId) => {
   return result;
 };
 
-export const deleteFile = async (fileId) => {
+const deleteFile = async(fileId) => {
   await initializeDB();
   db.exec(`
     DELETE FROM files WHERE fileId = ?;
   `, [fileId]);
+};
+
+module.exports = {
+  recordFile,
+  getFile,
+  getFiles,
+  deleteFile,
 };

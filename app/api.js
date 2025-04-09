@@ -1,16 +1,10 @@
-import * as mime from 'mime';
-import * as fs from 'fs';
+const mime = require("./mime");
+const fs = require("fs");
 
-let mockDeps = null;
-
-export function setMockDeps(deps) {
-  mockDeps = deps;
-}
-
-export function getContentType(filePath) {
-  const extension = filePath.split('.').pop();
-  return (mockDeps ? mockDeps : { mime }).mime.lookup(extension);
-}
+const getContentType = (filePath) => {
+  const extension = filePath.split(".").pop();
+  return mime.lookup(extension);
+};
 
 /**
  * @typedef {Object} UploadFileResponse
@@ -25,21 +19,20 @@ export function getContentType(filePath) {
  * @property {string} args.openWebUIKey - The api key for the open-webui instance
  * @returns {Promise<Object>} The response from the open-webui instance
  */
-export async function uploadFile({ filePath, openWebUIUrl, openWebUIKey }) {
-  const deps = mockDeps || { fs, fetch: global.fetch };
-  const fileData = await deps.fs.promises.readFile(filePath);
+const uploadFile = async({ filePath, openWebUIUrl, openWebUIKey }) => {
+  const fileData = await fs.promises.readFile(filePath);
   const contentType = getContentType(filePath);
-  
+
   const formData = new FormData();
-  formData.append('file', new Blob([fileData], { type: contentType }));
+  formData.append("file", new Blob([fileData], { type: contentType }));
   
-  const response = await deps.fetch(`${openWebUIUrl}/api/upload`, {
-    method: 'POST',
+  const response = await fetch(`${openWebUIUrl}/api/upload`, {
+    method : "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${openWebUIKey}`
+      "Content-Type" : "application/json",
+      "Authorization": `Bearer ${openWebUIKey}`,
     },
-    body: formData
+    body: formData,
   });
   
   if (!response.ok) {
@@ -47,17 +40,16 @@ export async function uploadFile({ filePath, openWebUIUrl, openWebUIKey }) {
   }
   
   return response.json();
-}
+};
 
-export async function addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl, openWebUIKey }) {
-  const deps = mockDeps || { fetch: global.fetch };
-  const response = await deps.fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
-    method: 'POST',
+const addFileToKnowledge = async({ fileId, knowledgeId, openWebUIUrl, openWebUIKey }) => {
+  const response = await fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
+    method : "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${openWebUIKey}`
+      "Content-Type" : "application/json",
+      "Authorization": `Bearer ${openWebUIKey}`,
     },
-    body: JSON.stringify({ file_id: fileId })
+    body: JSON.stringify({ file_id: fileId }),
   });
   
   if (!response.ok) {
@@ -65,4 +57,9 @@ export async function addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl, op
   }
   
   return response.json();
-}
+};
+
+module.exports = {
+  uploadFile,
+  addFileToKnowledge,
+};

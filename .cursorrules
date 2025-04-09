@@ -7,9 +7,8 @@
 - Run coverage with: yarn coverage
 
 ## Code Style
-- Using untranspiled JavaScript (ES modules)
-- No Babel or TypeScript
-- Follow Node.js native module patterns
+- Using untranspiled JavaScript
+- Follow Node.js common JS patterns
 
 ## Project Structure
 - Main application code in app/ directory
@@ -21,5 +20,6 @@
 
 ## Development Workflow
 - Write tests first (TDD approach)
-- Use Node's native test assertions
-- Mock dependencies using setMockDeps pattern 
+- Use node's built in test runner
+- Use assert from node:assert
+- Mock dependencies using sinon
