@@ -1,8 +1,8 @@
-const js = require("@eslint/js");
-const globals = require("globals");
-const stylistic = require("@stylistic/eslint-plugin");
+import globals from "globals";
+import js from "@eslint/js";
+import stylistic from "@stylistic/eslint-plugin";
 
-module.exports = [
+export default [
   js.configs.recommended,
   {
     languageOptions: {
