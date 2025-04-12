@@ -1,0 +1,11 @@
+{
+  "reporter": [
+    "text",
+    "html"
+  ],
+  "exclude": [
+    "**/*.test.js",
+    "coverage",
+    "eslint.config.mjs"
+  ]
+}

@@ -20,7 +20,7 @@ const path = require("node:path");
  * @returns {Function} - A function that gets called when a file is added to the directory
  */
 const getWatcherFn = () =>
-  async(event, filename) => {
+  async (event, filename) => {
     // const { owuiURL, owuiApiKey, knowledgeId } = args;
     console.log(`${event}: ${filename}`);
     // const filePath = path.join(directoryPath, filename);
@@ -28,7 +28,7 @@ const getWatcherFn = () =>
     // await addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl: owuiPath, openWebUIKey: owuiApiKey }); 
   };
 
-const syncDirectory = async(args) => {
+const syncDirectory = async (args) => {
   const {
     // directoryPath,
     // owuiURL,

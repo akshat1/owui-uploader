@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const { uploadFile } = require("./api.js");
 
 describe("api", () => {
-  test("uploadFile", async() => {
+  test("uploadFile", async () => {
     const mockFetch = sinon.stub(global, "fetch")
       .resolves({
         ok  : true,
@@ -14,10 +14,17 @@ describe("api", () => {
     sinon.stub(fs.promises, "readFile")
       .resolves("test");
     
+    const fakeForm = (() => {
+      const data = new Map();
+      return {
+        append: sinon.stub((key, value) => {
+          data.set(key, value);
+        }),
+        get: key => data.get(key),
+      };
+    })();
     sinon.stub(global, "FormData")
-      .returns({
-        append: sinon.stub(),
-      });
+      .returns(fakeForm);
 
     const response = await uploadFile({
       filePath    : "test.txt",

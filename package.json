@@ -7,11 +7,13 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "test": "node --test app/api.test.js",
-    "coverage": "c8 --reporter=html node --test app/api.test.js",
+    "test": "node --test \"app/**/*.test.js\"",
+    "coverage": "c8 --all node --test \"app/**/*.test.js\"",
     "lint": "eslint ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^4.2.0",
     "@stylistic/eslint-plugin-js": "^4.2.0",

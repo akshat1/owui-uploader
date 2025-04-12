@@ -8,13 +8,13 @@
  * - knowledgeId
  */
 
-const sqlite3 = require("node:sqlite3");
+const sqlite3 = require("sqlite3");
 const path = require("node:path");
 
 
 let db = null;
 
-const initializeDB = async() => {
+const initializeDB = async () => {
   if (db)
     return;
   db = new sqlite3.Database(path.join(process.env.HOME, ".owui-sync.db"));
@@ -28,34 +28,27 @@ const initializeDB = async() => {
   `);
 };
 
-const recordFile = async(fileId, lastModified, path, knowledgeId) => {
+const recordFile = async (fileId, lastModified, path, knowledgeId) => {
   await initializeDB();
-  db.exec(`
-    INSERT INTO files (fileId, lastModified, path, knowledgeId) VALUES (?, ?, ?, ?);
-  `, [fileId, lastModified, path, knowledgeId]);
+  console.log(">>>", db.exec._foo, db.exec);
+  db.exec("INSERT INTO files (fileId, lastModified, path, knowledgeId) VALUES (?, ?, ?, ?);", [fileId, lastModified, path, knowledgeId]);
 };
 
-const getFile = async(fileId) => {
+const getFile = async (fileId) => {
   await initializeDB();
-  const result = await db.get(`
-    SELECT * FROM files WHERE fileId = ?;
-  `, [fileId]);
+  const result = await db.get("SELECT * FROM files WHERE fileId = ?;", [fileId]);
   return result;
 };
 
-const getFiles = async(knowledgeId) => {
+const getFiles = async (knowledgeId) => {
   await initializeDB();
-  const result = await db.all(`
-    SELECT * FROM files WHERE knowledgeId = ?;
-  `, [knowledgeId]);
+  const result = await db.all("SELECT * FROM files WHERE knowledgeId = ?;", [knowledgeId]);
   return result;
 };
 
-const deleteFile = async(fileId) => {
+const deleteFile = async (fileId) => {
   await initializeDB();
-  db.exec(`
-    DELETE FROM files WHERE fileId = ?;
-  `, [fileId]);
+  db.exec("DELETE FROM files WHERE fileId = ?;", [fileId]);
 };
 
 module.exports = {
@@ -63,4 +56,5 @@ module.exports = {
   getFile,
   getFiles,
   deleteFile,
+  getDB: () => db,
 };
