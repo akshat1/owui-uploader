@@ -14,6 +14,13 @@ const path = require("node:path");
 
 let db = null;
 
+/**
+ * Initialize the database.
+ * 
+ * If the database already exists, it will not be initialized again.
+ * 
+ * @returns {Promise<void>}
+ */
 const initializeDB = async () => {
   if (db)
     return;
@@ -45,18 +52,31 @@ const recordFile = async ({ fileId, lastModified, filePath, knowledgeId }) => {
   db.exec("INSERT OR REPLACE INTO files (filePath, knowledgeId, fileId, lastModified) VALUES (?, ?, ?, ?);", [filePath, knowledgeId, fileId, lastModified]);
 };
 
+/**
+ * @param {string} filePath
+ * @param {string} knowledgeId
+ * @returns {import("sqlite3").Row}
+ */
 const getFile = async (filePath, knowledgeId) => {
   await initializeDB();
   const result = await db.get("SELECT * FROM files WHERE filePath = ? AND knowledgeId = ?;", [filePath, knowledgeId]);
   return result;
 };
 
+/**
+ * @param {string} knowledgeId
+ * @returns {import("sqlite3").Row[]}
+ */
 const getFiles = async (knowledgeId) => {
   await initializeDB();
   const result = await db.all("SELECT * FROM files WHERE knowledgeId = ?;", [knowledgeId]);
   return result;
 };
 
+/**
+ * @param {string} filePath
+ * @param {string} knowledgeId
+ */
 const deleteFile = async (filePath, knowledgeId) => {
   await initializeDB();
   db.exec("DELETE FROM files WHERE filePath = ? AND knowledgeId = ?;", [filePath, knowledgeId]);
