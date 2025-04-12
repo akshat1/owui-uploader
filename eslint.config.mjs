@@ -34,6 +34,7 @@ export default [
       "@stylistic/space-unary-ops"            : ["error", { "words": true, "nonwords": false }],
       "@stylistic/wrap-regex"                 : "error",
       "@stylistic/key-spacing"                : ["error", { align: "colon" }],
+      "@stylistic/eol-last"                   : ["error", "always"],
       "@/no-debugger"                         : "error",
       "@/switch-colon-spacing"                : ["error", { "after": true, "before": false }],
       "sort-imports"                          : "error",
