@@ -43,7 +43,12 @@ describe("db.js", () => {
       const filePath = "/path/to/file.txt";
       const knowledgeId = "knowledge-456";
       
-      await db.recordFile({ fileId, lastModified, filePath, knowledgeId });
+      await db.recordFile({
+        fileId,
+        lastModified,
+        filePath,
+        knowledgeId, 
+      });
       assert.strictEqual(mockDBInstance.exec.callCount, 1);
       const insertCall = mockDBInstance.exec.firstCall;
       assert.strictEqual(insertCall.args[0], "INSERT OR REPLACE INTO files (filePath, knowledgeId, fileId, lastModified) VALUES (?, ?, ?, ?);");

@@ -47,7 +47,13 @@ const initializeDB = async () => {
  * @param {string} args.filePath
  * @param {string} args.knowledgeId
  */
-const recordFile = async ({ fileId, lastModified, filePath, knowledgeId }) => {
+const recordFile = async (args) => {
+  const {
+    fileId,
+    lastModified,
+    filePath,
+    knowledgeId,
+  } = args;
   await initializeDB();
   db.exec("INSERT OR REPLACE INTO files (filePath, knowledgeId, fileId, lastModified) VALUES (?, ?, ?, ?);", [filePath, knowledgeId, fileId, lastModified]);
 };
