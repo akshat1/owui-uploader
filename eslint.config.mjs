@@ -28,7 +28,7 @@ export default [
       "@stylistic/object-curly-spacing"       : ["error", "always"],
       "@stylistic/array-bracket-spacing"      : ["error", "never"],
       "@stylistic/arrow-spacing"              : ["error", { "before": true, "after": true }],
-      "@stylistic/space-before-function-paren": ["error", "never"],
+      "@stylistic/space-before-function-paren": ["error", "always"],
       "@stylistic/space-in-parens"            : ["error", "never"],
       "@stylistic/space-infix-ops"            : ["error", { "int32Hint": false }],
       "@stylistic/space-unary-ops"            : ["error", { "words": true, "nonwords": false }],

@@ -19,7 +19,7 @@ const getContentType = (filePath) => {
  * @property {string} args.openWebUIKey - The api key for the open-webui instance
  * @returns {Promise<Object>} The response from the open-webui instance
  */
-const uploadFile = async({ filePath, openWebUIUrl, openWebUIKey }) => {
+const uploadFile = async ({ filePath, openWebUIUrl, openWebUIKey }) => {
   const fileData = await fs.promises.readFile(filePath);
   const contentType = getContentType(filePath);
 
@@ -42,7 +42,7 @@ const uploadFile = async({ filePath, openWebUIUrl, openWebUIKey }) => {
   return response.json();
 };
 
-const addFileToKnowledge = async({ fileId, knowledgeId, openWebUIUrl, openWebUIKey }) => {
+const addFileToKnowledge = async ({ fileId, knowledgeId, openWebUIUrl, openWebUIKey }) => {
   const response = await fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
     method : "POST",
     headers: {

@@ -1,5 +1,5 @@
 const lookup = (extName) => {
-  switch (extName) {
+  switch (extName.toLowerCase()) {
     case "txt":
       return "text/plain";
     case "pdf":
