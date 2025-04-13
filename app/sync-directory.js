@@ -100,5 +100,3 @@ module.exports = {
   syncDirectory,
   syncFile,
 };
-
-// Testing.
