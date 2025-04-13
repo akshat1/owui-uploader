@@ -27,7 +27,12 @@ describe("db.js", () => {
   
   describe("recordFile", () => {
     it("should initialize the database", async () => {
-      await db.recordFile("file-123", "2023-01-01T12:00:00Z", "/path/to/file.txt", "knowledge-456");
+      await db.recordFile({
+        fileId      : "file-123",
+        lastModified: "2023-01-01T12:00:00Z",
+        filePath    : "/path/to/file.txt",
+        knowledgeId : "knowledge-456",
+      });
       assert.strictEqual(mockDBConstructor.callCount, 1);
       assert.deepStrictEqual(mockDBConstructor.firstCall.args, ["/mock/home/.owui-sync.db"]);
     });
@@ -38,29 +43,35 @@ describe("db.js", () => {
       const filePath = "/path/to/file.txt";
       const knowledgeId = "knowledge-456";
       
-      await db.recordFile(fileId, lastModified, filePath, knowledgeId);
+      await db.recordFile({
+        fileId,
+        lastModified,
+        filePath,
+        knowledgeId, 
+      });
       assert.strictEqual(mockDBInstance.exec.callCount, 1);
       const insertCall = mockDBInstance.exec.firstCall;
-      assert.strictEqual(insertCall.args[0], "INSERT INTO files (fileId, lastModified, path, knowledgeId) VALUES (?, ?, ?, ?);");
-      assert.deepStrictEqual(insertCall.args[1], [fileId, lastModified, filePath, knowledgeId]);
+      assert.strictEqual(insertCall.args[0], "INSERT OR REPLACE INTO files (filePath, knowledgeId, fileId, lastModified) VALUES (?, ?, ?, ?);");
+      assert.deepStrictEqual(insertCall.args[1], [filePath, knowledgeId, fileId, lastModified]);
     });
   });
 
   describe("getFile", () => {
-    it("should retrieve a file by ID", async () => {
-      const fileId = "file-123";
+    it("should retrieve a file by filePath and knowledge ID", async () => {
+      const filePath = "/path/to/file.txt";
+      const knowledgeId = "knowledge-456";
       const expectedFile = {
         fileId      : "file-123",
         lastModified: "2023-01-01T12:00:00Z",
-        path        : "/path/to/file.txt",
+        filePath    : "/path/to/file.txt",
         knowledgeId : "knowledge-456",
       };
       mockDBInstance.get.resolves(expectedFile);
       
-      const result = await db.getFile(fileId);
+      const result = await db.getFile(filePath, knowledgeId);
       assert.strictEqual(mockDBInstance.get.callCount, 1);
-      assert.strictEqual(mockDBInstance.get.firstCall.args[0], "SELECT * FROM files WHERE fileId = ?;");
-      assert.deepStrictEqual(mockDBInstance.get.firstCall.args[1], [fileId]);
+      assert.strictEqual(mockDBInstance.get.firstCall.args[0], "SELECT * FROM files WHERE filePath = ? AND knowledgeId = ?;");
+      assert.deepStrictEqual(mockDBInstance.get.firstCall.args[1], [filePath, knowledgeId]);
       assert.deepStrictEqual(result, expectedFile);
     });
   });
@@ -72,13 +83,13 @@ describe("db.js", () => {
         {
           fileId      : "file-123",
           lastModified: "2023-01-01T12:00:00Z",
-          path        : "/path/to/file1.txt",
+          filePath    : "/path/to/file1.txt",
           knowledgeId : "knowledge-456",
         },
         {
           fileId      : "file-456",
           lastModified: "2023-01-02T12:00:00Z",
-          path        : "/path/to/file2.txt",
+          filePath    : "/path/to/file2.txt",
           knowledgeId : "knowledge-456",
         },
       ];
@@ -93,15 +104,14 @@ describe("db.js", () => {
   });
 
   describe("deleteFile", () => {
-    it("should delete a file by ID", async () => {
-      const fileId = "file-123";
+    it("should delete a file by filePath and knowledge ID", async () => {
+      const filePath = "/path/to/file.txt";
+      const knowledgeId = "knowledge-456";
       
-      await db.deleteFile(fileId);
+      await db.deleteFile(filePath, knowledgeId);
       assert.strictEqual(mockDBInstance.exec.callCount, 1);
-      
-      const deleteCall = mockDBInstance.exec.firstCall;
-      assert.strictEqual(deleteCall.args[0], "DELETE FROM files WHERE fileId = ?;");
-      assert.deepStrictEqual(deleteCall.args[1], [fileId]);
+      assert.strictEqual(mockDBInstance.exec.firstCall.args[0], "DELETE FROM files WHERE filePath = ? AND knowledgeId = ?;");
+      assert.deepStrictEqual(mockDBInstance.exec.firstCall.args[1], [filePath, knowledgeId]);
     });
   });
 });

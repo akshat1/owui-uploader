@@ -28,22 +28,6 @@ const getWatcherFn = () =>
     // await addFileToKnowledge({ fileId, knowledgeId, openWebUIUrl: owuiPath, openWebUIKey: owuiApiKey }); 
   };
 
-const syncDirectory = async (args) => {
-  const {
-    // directoryPath,
-    // owuiURL,
-    // owuiApiKey, 
-    knowledgeId,
-  } = args;
-  console.log(`Syncing directory ${knowledgeId}`);
-  // Recursively, read all files in the directory
-  // For each file, compare last modified date with previously recorded date
-  // If the file has been modified, re-upload the file to Open WebUI under the same fileId that was recorded previously
-  // If the file has been added, add the file to Open WebUI and record the path, last modified date, and fileId from the response
-  // OpenWebUI API Doesn't let us delete files yet, so we'll ignore renames, moves, and deletions.
-  // We'll record fileId, lastModified, and path for each file in a SQLite database (using utility functions in ./db.js) 
-};
-
 const main = () => {
   const owuiURL = process.env.OPEN_WEBUI_URL;
   const owuiApiKey = process.env.OPEN_WEBUI_API_KEY;
