@@ -1,4 +1,4 @@
-const { describe, test, afterEach, before } = require("node:test");
+const { describe, test, afterEach, before, after } = require("node:test");
 const assert = require("node:assert");
 const sinon = require("sinon");
 const fs = require("node:fs");
@@ -13,6 +13,10 @@ describe("api", () => {
 
   afterEach(() => {
     sinon.reset();
+  });
+
+  after(() => {
+    sinon.restore();
   });
 
   test("uploadFile", async () => {
