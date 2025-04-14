@@ -93,5 +93,4 @@ module.exports = {
   getFile,
   getFiles,
   deleteFile,
-  getDB: () => db,
 };

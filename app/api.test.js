@@ -1,16 +1,29 @@
-const { describe, test, afterEach } = require("node:test");
+const { describe, test, afterEach, before, after } = require("node:test");
 const assert = require("node:assert");
 const sinon = require("sinon");
 const fs = require("node:fs");
-const { uploadFile } = require("./api.js");
+const { uploadFile, addFileToKnowledge } = require("./api.js");
 
 describe("api", () => {
+  let mockFetch;
+
+  before(() => {
+    mockFetch = sinon.stub(global, "fetch");
+  });
+
+  afterEach(() => {
+    sinon.reset();
+  });
+
+  after(() => {
+    sinon.restore();
+  });
+
   test("uploadFile", async () => {
-    const mockFetch = sinon.stub(global, "fetch")
-      .resolves({
-        ok  : true,
-        json: sinon.stub().resolves({ id: "123" }),
-      });
+    mockFetch.resolves({
+      ok  : true,
+      json: sinon.stub().resolves({ id: "123" }),
+    });
     sinon.stub(fs.promises, "readFile")
       .resolves("test");
     
@@ -45,7 +58,27 @@ describe("api", () => {
     assert.strictEqual(formData.get("file").type, "text/plain");
   });
 
-  afterEach(() => {
-    sinon.restore();
+  test("addFileToKnowledge", async () => {
+    mockFetch.resolves({
+      ok  : true,
+      json: sinon.stub().resolves({}),
+    });
+
+    await addFileToKnowledge({
+      fileId      : "123",
+      knowledgeId : "456",
+      openWebUIUrl: "http://localhost:3000",
+      openWebUIKey: "TEST KEY",
+    });
+
+    assert.strictEqual(mockFetch.callCount, 1);
+    assert.strictEqual(mockFetch.args[0][0], "http://localhost:3000/api/knowledge/456/file/add");
+    const fetchOpts = mockFetch.args[0][1];
+    assert.strictEqual(fetchOpts.method, "POST");
+    assert.strictEqual(fetchOpts.headers["Content-Type"], "application/json");
+    assert.strictEqual(fetchOpts.headers["Authorization"], "Bearer TEST KEY");
+
+    const body = JSON.parse(fetchOpts.body);
+    assert.strictEqual(body.file_id, "123");
   });
 });
