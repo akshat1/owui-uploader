@@ -54,6 +54,7 @@ const addFileToKnowledge = async (args) => {
     openWebUIUrl,
     openWebUIKey, 
   } = args;
+
   const response = await fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
     method : "POST",
     headers: {
