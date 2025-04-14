@@ -1,4 +1,0 @@
-- [ ] Unit tests.
-- [ ] Take another look at how mocking is done in api.test.js. This file was entirely vibe coded and could probably benefit from some cleanup.
-- [ ] Implement directory sync.
-- [ ] Execute a few mock trials with actual uploads replaced with console messages.
