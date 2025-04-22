@@ -1,8 +1,11 @@
-const { describe, it, afterEach, before } = require("node:test");
+const {
+  describe, it, afterEach, before, 
+} = require("node:test");
 const assert = require("node:assert");
 const sinon = require("sinon");
 const db = require("./db.js");
 const sqlite3 = require("sqlite3");
+const path = require("node:path");
 
 describe("db.js", () => {
   let mockDBInstance;
@@ -34,7 +37,7 @@ describe("db.js", () => {
         knowledgeId : "knowledge-456",
       });
       assert.strictEqual(mockDBConstructor.callCount, 1);
-      assert.deepStrictEqual(mockDBConstructor.firstCall.args, ["/mock/home/.owui-sync.db"]);
+      assert.deepStrictEqual(mockDBConstructor.firstCall.args, [path.join("/mock/home", ".owui-uploader", "sync-records.db")]);
     });
 
     it("should record a file", async () => {

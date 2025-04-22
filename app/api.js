@@ -1,3 +1,4 @@
+const path = require("node:path");
 const mime = require("./mime");
 const fs = require("fs");
 
@@ -20,34 +21,48 @@ const getContentType = (filePath) => {
  * @returns {Promise<Object>} The response from the open-webui instance
  */
 const uploadFile = async (args) => {
+  console.log(`\n\n[uploadFile] Uploading file ${args.filePath}`);
   const {
     filePath,
     openWebUIUrl,
     openWebUIKey, 
   } = args;
-  const fileData = await fs.promises.readFile(filePath);
-  const contentType = getContentType(filePath);
-
-  const formData = new FormData();
-  formData.append("file", new Blob([fileData], { type: contentType }));
   
-  const response = await fetch(`${openWebUIUrl}/api/upload`, {
-    method : "POST",
-    headers: {
-      "Content-Type" : "application/json",
-      "Authorization": `Bearer ${openWebUIKey}`, 
-    },
-    body: formData,
+  const contentType = getContentType(filePath);
+  console.log(`[uploadFile] Content type: ${contentType}`);
+  const body = new FormData();
+  const buffer = await fs.promises.readFile(filePath);
+  const blob = new Blob([buffer], { type: contentType });
+  body.append("file", blob, path.basename(filePath));
+  const headers = { "Authorization": `Bearer ${openWebUIKey}`,
+    "Accept"       : "application/json" };
+  console.log(`Headers: ${JSON.stringify(headers, null, 2)}`);
+  const url = `${openWebUIUrl}api/v1/files/`;
+  console.log(`[uploadFile] Uploading file (${(buffer.length / 1024).toFixed(2)} KB) to ${url}`);
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    body,
   });
   
   if (!response.ok) {
+    console.error(`[uploadFile] Failed to upload file: ${response.statusText}`);
     throw new Error(`Failed to upload file: ${response.statusText}`);
   }
-  
-  return response.json();
+
+  const responseJson = await response.json();
+
+  if (responseJson.error) {
+    console.error(`[uploadFile] Failed to upload file: ${responseJson.error}`);
+    throw new Error(`Failed to upload file: ${responseJson.error}`);
+  }
+
+  console.log(`[uploadFile] File uploaded successfully.\n${JSON.stringify(responseJson, null, 2)}`);
+  return responseJson;
 };
 
 const addFileToKnowledge = async (args) => {
+  console.log(`[addFileToKnowledge] Adding file to knowledge: ${args.fileId}`);
   const {
     fileId,
     knowledgeId,
@@ -55,23 +70,23 @@ const addFileToKnowledge = async (args) => {
     openWebUIKey, 
   } = args;
 
+  console.log(`[addFileToKnowledge] Adding ${args.fileId} to`);
   const response = await fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
     method : "POST",
-    headers: {
-      "Content-Type" : "application/json",
-      "Authorization": `Bearer ${openWebUIKey}`, 
-    },
+    headers: { "Content-Type" : "application/json",
+      "Authorization": `Bearer ${openWebUIKey}` },
     body: JSON.stringify({ file_id: fileId }),
   });
-  
+
+  /* c8 ignore next 4 */
   if (!response.ok) {
+    console.error(`[addFileToKnowledge] Failed to add file to knowledge: ${response.statusText}`);
     throw new Error(`Failed to add file to knowledge: ${response.statusText}`);
   }
   
+  console.log(`[addFileToKnowledge] File added to knowledge successfully.\n${JSON.stringify(response.json(), null, 2)}`);
   return response.json();
 };
 
-module.exports = {
-  uploadFile,
-  addFileToKnowledge, 
-};
+module.exports = { uploadFile,
+  addFileToKnowledge };

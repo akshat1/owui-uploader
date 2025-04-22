@@ -31,6 +31,4 @@ const lookup = (extName) => {
   }
 };
 
-module.exports = {
-  lookup,
-};
+module.exports = { lookup };

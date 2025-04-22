@@ -24,7 +24,7 @@ let db = null;
 const initializeDB = async () => {
   if (db)
     return;
-  db = new sqlite3.Database(path.join(process.env.HOME, ".owui-sync.db"));
+  db = new sqlite3.Database(path.join(process.env.HOME, ".owui-uploader", "sync-records.db"));
   db.exec(` 
     CREATE TABLE IF NOT EXISTS files (
       filePath TEXT,

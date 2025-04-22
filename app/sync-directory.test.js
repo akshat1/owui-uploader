@@ -1,4 +1,6 @@
-const { describe, it, afterEach, before } = require("node:test");
+const {
+  describe, it, afterEach, before, 
+} = require("node:test");
 const assert = require("node:assert");
 const sinon = require("sinon");
 const path = require("path");
@@ -54,14 +56,8 @@ describe("sync-directory.js", () => {
       const fileStat = { mtime: "2023-01-01T12:00:00Z" };
       const fileId = "file-456";
       
-      // getFileStub.resolves({
-      //   fileId,
-      //   lastModified: "2024-01-01T12:00:00Z",
-      //   filePath,
-      //   knowledgeId,
-      // });
       fsReadFileStub.resolves("Hello, world!");
-      uploadFileStub.resolves(fileId);
+      uploadFileStub.resolves({ id: fileId });
       addFileToKnowledgeStub.resolves();
       recordFileStub.resolves();
       
@@ -71,6 +67,7 @@ describe("sync-directory.js", () => {
         openWebUIUrl,
         openWebUIKey,
         fileStat,
+        acceptableExtensions: ["txt", "md", "pdf"],
       });
       
       assert.strictEqual(getFileStub.callCount, 1);
@@ -107,17 +104,15 @@ describe("sync-directory.js", () => {
       const openWebUIKey = "api-key-123";
       const fileStat = { mtime: "2023-01-02T12:00:00Z" };
       const fileId = "file-456";
-      
+
       getFileStub.resolves({
         fileId      : "old-file-id",
         lastModified: "2023-01-01T12:00:00Z",
         filePath,
         knowledgeId,
       });
-      uploadFileStub.resolves(fileId);
+      uploadFileStub.resolves({ id: fileId });
       addFileToKnowledgeStub.resolves();
-      recordFileStub.resolves();
-      // Mock recordFile to resolve successfully
       recordFileStub.resolves();
       
       // Execute
@@ -127,6 +122,7 @@ describe("sync-directory.js", () => {
         openWebUIUrl,
         openWebUIKey,
         fileStat,
+        acceptableExtensions: ["txt", "md", "pdf"],
       });
       
       // Verify
@@ -177,6 +173,7 @@ describe("sync-directory.js", () => {
         openWebUIUrl,
         openWebUIKey,
         fileStat,
+        acceptableExtensions: ["txt", "md", "pdf"],
       });
       
       assert.strictEqual(getFileStub.callCount, 1);
@@ -196,43 +193,35 @@ describe("sync-directory.js", () => {
       const openWebUIUrl = "https://openwebui.example.com";
       const openWebUIKey = "api-key-123";
       
-      fsReaddirStub.resolves(["file1.txt", "file2.txt"]);
+      fsReaddirStub.resolves(["/file1.txt", "/file2.txt"]);
       
       fsStatStub.onFirstCall().resolves({ isDirectory: () => false });
       fsStatStub.onSecondCall().resolves({ isDirectory: () => false });
       
       getFileStub.resolves(null);
-      uploadFileStub.resolves("file-id");
+      uploadFileStub.resolves({ id: "file-id" });
       addFileToKnowledgeStub.resolves();
       recordFileStub.resolves();
-      
+      pathJoinStub.returns(`${directoryPath}/file1.txt`);
+      pathJoinStub.returns(`${directoryPath}/file2.txt`);
+
       await syncDirectory({
         directoryPath,
         knowledgeId,
         openWebUIUrl,
         openWebUIKey,
+        acceptableExtensions: ["txt", "md", "pdf"],
       });
       
       assert.strictEqual(fsReaddirStub.callCount, 1);
       assert.deepStrictEqual(fsReaddirStub.firstCall.args, [directoryPath]);
       
-      // Should call fs.stat twice (once for each file)
-      assert.strictEqual(fsStatStub.callCount, 2);
-      
-      // Should call path.join twice (once for each file)
-      assert.strictEqual(pathJoinStub.callCount, 2);
-      
-      // Should call getFile twice (once for each file)
-      assert.strictEqual(getFileStub.callCount, 2);
-      
-      // Should call uploadFile twice (once for each file)
-      assert.strictEqual(uploadFileStub.callCount, 2);
-      
-      // Should call addFileToKnowledge twice (once for each file)
-      assert.strictEqual(addFileToKnowledgeStub.callCount, 2);
-      
-      // Should call recordFile twice (once for each file)
-      assert.strictEqual(recordFileStub.callCount, 2);
+      assert.strictEqual(fsStatStub.callCount, 2, "Should call fs.stat twice (once for each file)");
+      assert.strictEqual(pathJoinStub.callCount, 2, "Should call path.join twice (once for each file)");
+      assert.strictEqual(getFileStub.callCount, 2, "Should call getFile twice (once for each file)");
+      assert.strictEqual(uploadFileStub.callCount, 2, "Should call uploadFile twice (once for each file)");
+      assert.strictEqual(addFileToKnowledgeStub.callCount, 2, "Should call addFileToKnowledge twice (once for each file)");
+      assert.strictEqual(recordFileStub.callCount, 2, "Should call recordFile twice (once for each file)");
     });
 
     it("should recursively sync subdirectories", async () => {
@@ -242,25 +231,21 @@ describe("sync-directory.js", () => {
       const openWebUIUrl = "https://openwebui.example.com";
       const openWebUIKey = "api-key-123";
       
-      // Mock fs.readdir to return a file and a directory
       fsReaddirStub.onFirstCall().resolves(["file1.txt", "subdir"]);
       fsReaddirStub.onSecondCall().resolves(["file2.txt"]);
+
+      pathJoinStub.returns(`${directoryPath}/file1.txt`);
+      pathJoinStub.returns(`${directoryPath}/subdir`);
+      pathJoinStub.returns(`${directoryPath}/subdir/file2.txt`);
       
       // Mock fs.stat for each file/directory
       fsStatStub.onFirstCall().resolves({ isDirectory: () => false });
       fsStatStub.onSecondCall().resolves({ isDirectory: () => true });
       fsStatStub.onThirdCall().resolves({ isDirectory: () => false });
       
-      // Mock getFile to return null for all files (they don't exist in the database)
       getFileStub.resolves(null);
-      
-      // Mock uploadFile to return a fileId
-      uploadFileStub.resolves("file-id");
-      
-      // Mock addFileToKnowledge to resolve successfully
+      uploadFileStub.resolves({ id: "file-id" });
       addFileToKnowledgeStub.resolves();
-      
-      // Mock recordFile to resolve successfully
       recordFileStub.resolves();
       
       // Execute
@@ -269,27 +254,16 @@ describe("sync-directory.js", () => {
         knowledgeId,
         openWebUIUrl,
         openWebUIKey,
+        acceptableExtensions: ["txt", "md", "pdf"],
       });
       
-      assert.strictEqual(fsReaddirStub.callCount, 2);
-      
-      // Should call fs.stat three times (once for each file/directory)
-      assert.strictEqual(fsStatStub.callCount, 3);
-      
-      // Should call path.join three times (once for each file/directory)
-      assert.strictEqual(pathJoinStub.callCount, 3);
-      
-      // Should call getFile twice (once for each file)
-      assert.strictEqual(getFileStub.callCount, 2);
-      
-      // Should call uploadFile twice (once for each file)
-      assert.strictEqual(uploadFileStub.callCount, 2);
-      
-      // Should call addFileToKnowledge twice (once for each file)
-      assert.strictEqual(addFileToKnowledgeStub.callCount, 2);
-      
-      // Should call recordFile twice (once for each file)
-      assert.strictEqual(recordFileStub.callCount, 2);
+      assert.strictEqual(fsReaddirStub.callCount, 2, "Should call fs.readdir twice (once for each file)");
+      assert.strictEqual(fsStatStub.callCount, 3, "Should call fs.stat three times (once for each file/directory)");
+      assert.strictEqual(pathJoinStub.callCount, 3, "Should call path.join three times (once for each file/directory)");
+      assert.strictEqual(getFileStub.callCount, 2, "Should call getFile twice (once for each file)");
+      assert.strictEqual(uploadFileStub.callCount, 2, "Should call uploadFile twice (once for each file)");
+      assert.strictEqual(addFileToKnowledgeStub.callCount, 2, "Should call addFileToKnowledge twice (once for each file)");
+      assert.strictEqual(recordFileStub.callCount, 2, "Should call recordFile twice (once for each file)");
     });
   });
 }); 
