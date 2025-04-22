@@ -4,7 +4,9 @@ const {
 const assert = require("node:assert");
 const sinon = require("sinon");
 const fs = require("node:fs");
-const { uploadFile, addFileToKnowledge } = require("./api.js");
+const {
+  uploadFile, addFileToKnowledge, 
+} = require("./api.js");
 
 describe("api", () => {
   let mockFetch;
@@ -30,16 +32,20 @@ describe("api", () => {
   });
 
   test("uploadFile", async () => {
-    mockFetch.resolves({ ok  : true,
-      json: sinon.stub().resolves({ id: "123" }) });
+    mockFetch.resolves({
+      ok  : true,
+      json: sinon.stub().resolves({ id: "123" }), 
+    });
     mockReadFile.resolves(Buffer.from("test"));
     
     const fakeForm = (() => {
       const data = new Map();
-      return { append: sinon.stub((key, value) => {
-        data.set(key, value);
-      }),
-      get: key => data.get(key) };
+      return {
+        append: sinon.stub((key, value) => {
+          data.set(key, value);
+        }),
+        get: key => data.get(key), 
+      };
     })();
     mockFormData.returns(fakeForm);
 
@@ -68,16 +74,20 @@ describe("api", () => {
   });
 
   test("uploadFile handles error response", async () => {
-    mockFetch.resolves({ ok        : false,
-      statusText: "Not Found" });
+    mockFetch.resolves({
+      ok        : false,
+      statusText: "Not Found", 
+    });
     mockReadFile.resolves(Buffer.from("test"));
     
     const fakeForm = (() => {
       const data = new Map();
-      return { append: sinon.stub((key, value) => {
-        data.set(key, value);
-      }),
-      get: key => data.get(key) };
+      return {
+        append: sinon.stub((key, value) => {
+          data.set(key, value);
+        }),
+        get: key => data.get(key), 
+      };
     })();
     mockFormData.returns(fakeForm);
 
@@ -95,16 +105,20 @@ describe("api", () => {
   });
 
   test("uploadFile handles error in JSON response", async () => {
-    mockFetch.resolves({ ok  : true,
-      json: sinon.stub().resolves({ error: "Invalid file" }) });
+    mockFetch.resolves({
+      ok  : true,
+      json: sinon.stub().resolves({ error: "Invalid file" }), 
+    });
     mockReadFile.resolves(Buffer.from("test"));
     
     const fakeForm = (() => {
       const data = new Map();
-      return { append: sinon.stub((key, value) => {
-        data.set(key, value);
-      }),
-      get: key => data.get(key) };
+      return {
+        append: sinon.stub((key, value) => {
+          data.set(key, value);
+        }),
+        get: key => data.get(key), 
+      };
     })();
     mockFormData.returns(fakeForm);
 
@@ -122,8 +136,10 @@ describe("api", () => {
   });
 
   test("addFileToKnowledge", async () => {
-    mockFetch.resolves({ ok  : true,
-      json: sinon.stub().resolves({}) });
+    mockFetch.resolves({
+      ok  : true,
+      json: sinon.stub().resolves({}), 
+    });
 
     await addFileToKnowledge({
       fileId      : "123",
@@ -133,7 +149,7 @@ describe("api", () => {
     });
 
     assert.strictEqual(mockFetch.callCount, 1);
-    assert.strictEqual(mockFetch.args[0][0], "http://localhost:3000/api/knowledge/456/file/add");
+    assert.strictEqual(mockFetch.args[0][0], "http://localhost:3000/api/v1/knowledge/456/file/add");
     const fetchOpts = mockFetch.args[0][1];
     assert.strictEqual(fetchOpts.method, "POST");
     assert.strictEqual(fetchOpts.headers["Content-Type"], "application/json");

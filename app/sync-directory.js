@@ -50,7 +50,9 @@ const syncFile = async (args) => {
   const fileRecord = await db.getFile(filePath, knowledgeId);
   if (!fileRecord || fileRecord.lastModified !== lastModified) {
     console.log(`[syncFile] File ${filePath} has been modified`);
-    const { uploadFile, addFileToKnowledge } = api;
+    const {
+      uploadFile, addFileToKnowledge, 
+    } = api;
     const { recordFile } = db;
     try {
       const { id: fileId } = await uploadFile({
@@ -136,4 +138,6 @@ const syncDirectory = async (args) => {
 };
 
 
-module.exports = { syncDirectory, syncFile };
+module.exports = {
+  syncDirectory, syncFile, 
+};

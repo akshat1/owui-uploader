@@ -34,8 +34,10 @@ const uploadFile = async (args) => {
   const buffer = await fs.promises.readFile(filePath);
   const blob = new Blob([buffer], { type: contentType });
   body.append("file", blob, path.basename(filePath));
-  const headers = { "Authorization": `Bearer ${openWebUIKey}`,
-    "Accept"       : "application/json" };
+  const headers = {
+    "Authorization": `Bearer ${openWebUIKey}`,
+    "Accept"       : "application/json", 
+  };
   console.log(`Headers: ${JSON.stringify(headers, null, 2)}`);
   const url = `${openWebUIUrl}api/v1/files/`;
   console.log(`[uploadFile] Uploading file (${(buffer.length / 1024).toFixed(2)} KB) to ${url}`);
@@ -71,10 +73,12 @@ const addFileToKnowledge = async (args) => {
   } = args;
 
   console.log(`[addFileToKnowledge] Adding ${args.fileId} to`);
-  const response = await fetch(`${openWebUIUrl}/api/knowledge/${knowledgeId}/file/add`, {
+  const response = await fetch(`${openWebUIUrl}/api/v1/knowledge/${knowledgeId}/file/add`, {
     method : "POST",
-    headers: { "Content-Type" : "application/json",
-      "Authorization": `Bearer ${openWebUIKey}` },
+    headers: {
+      "Content-Type" : "application/json",
+      "Authorization": `Bearer ${openWebUIKey}`, 
+    },
     body: JSON.stringify({ file_id: fileId }),
   });
 
@@ -88,5 +92,6 @@ const addFileToKnowledge = async (args) => {
   return response.json();
 };
 
-module.exports = { uploadFile,
-  addFileToKnowledge };
+module.exports = {
+  uploadFile, addFileToKnowledge, 
+};

@@ -33,7 +33,9 @@ describe("watcher.js", () => {
     const acceptableExtensions = ["txt", "md", "pdf"];
     const filename = "test.txt";
     const filePath = "/test/dir/test.txt";
-    const fileStat = { isDirectory: () => false, mtime: new Date() };
+    const fileStat = {
+      isDirectory: () => false, mtime: new Date(), 
+    };
     
     pathJoinStub.returns(filePath);
     fsStatStub.resolves(fileStat);
@@ -69,7 +71,9 @@ describe("watcher.js", () => {
     const acceptableExtensions = ["txt", "md", "pdf"];
     const filename = "test.txt";
     const filePath = "/test/dir/test.txt";
-    const fileStat = { isDirectory: () => false, mtime: new Date() };
+    const fileStat = {
+      isDirectory: () => false, mtime: new Date(), 
+    };
     
     pathJoinStub.returns(filePath);
     fsStatStub.resolves(fileStat);
